@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Audit log</h2>
+  <div class="table-wrap"><table><thead><tr><th>When</th><th>User</th><th>Action</th><th>Entity</th><th>Detail</th></tr></thead><tbody>
+    {% for row in entries %}
+    <tr><td>{{ row.created_at[:19] }}</td><td>{{ row.full_name or 'System' }}</td><td>{{ row.action }}</td><td>{{ row.entity_type }}{% if row.entity_id %} #{{ row.entity_id }}{% endif %}</td><td>{{ row.detail }}</td></tr>
+    {% else %}<tr><td colspan="5" class="muted">No audit entries found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

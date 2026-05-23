@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-header">
+    <div><h2>POS / Invoices</h2><p class="muted">Sales, balances, and payment tracking.</p></div>
+    <a class="button-link" href="{{ url_for('invoice_new') }}">New invoice</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Invoice</th><th>Client</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for row in invoices %}
+        <tr><td><a href="{{ url_for('invoice_detail', invoice_id=row.id) }}">{{ row.invoice_number }}</a></td><td>{{ row.client_name or 'Walk-in' }}</td><td>R {{ '%.2f'|format(row.total) }}</td><td>{{ row.payment_status }}</td><td>{{ row.created_at[:10] }}</td></tr>
+        {% else %}
+        <tr><td colspan="5" class="muted">No invoices yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

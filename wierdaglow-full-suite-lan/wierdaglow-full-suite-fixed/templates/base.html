@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Wierdaglow Full Suite{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {% if current_user %}
+  <aside class="sidebar">
+    <div class="brand-block">
+      <div class="brand-kicker">Wierdaglow</div>
+      <h1>Salon Suite</h1>
+      <p>Booking · POS · Consent</p>
+    </div>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('clients') }}">Clients</a>
+      <a href="{{ url_for('bookings') }}">Bookings</a>
+      <a href="{{ url_for('invoice_list') }}">POS / Invoices</a>
+      <a href="{{ url_for('products') }}">Products</a>
+      <a href="{{ url_for('staff_list') }}">Staff</a>
+      {% if current_user['role'] == 'admin' %}
+      <a href="{{ url_for('audit_log') }}">Audit Log</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+  </aside>
+  {% endif %}
+
+  <main class="main{% if not current_user %} centered{% endif %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

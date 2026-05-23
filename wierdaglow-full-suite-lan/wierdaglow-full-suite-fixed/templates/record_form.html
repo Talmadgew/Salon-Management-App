@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel form-panel">
+  <div class="section-header">
+    <div><h2>New treatment consent</h2><p class="muted">Client: {{ client.first_name }} {{ client.last_name }}</p></div>
+    <a class="button-link secondary" href="{{ url_for('client_detail', client_id=client.id) }}">Back to client</a>
+  </div>
+  <form method="post" id="recordForm" class="stack-form">
+    <div class="grid two">
+      <label>Service
+        <select name="service_code" id="serviceCode" required>
+          <option value="">Select service</option>
+          {% for code, service in service_definitions.items() %}
+          <option value="{{ code }}" {% if payload.get('service_code') == code %}selected{% endif %}>{{ service.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Service date<input type="date" name="service_date" value="{{ payload.get('service_date', today) }}" required /></label>
+    </div>
+
+    <section class="panel inset sunbed-extra hidden" id="sunbedExtras">
+      <h3>Sunbed controls</h3>
+      <div class="grid two">
+        <label>Minutes requested<input type="number" name="minutes_requested" min="1" max="10" value="{{ payload.get('minutes_requested', '10') }}" /></label>
+        <label>Previous session date<input type="date" name="previous_session_date" value="{{ payload.get('previous_session_date', '') }}" /></label>
+      </div>
+      <label>Fitzpatrick skin type
+        <select name="skin_type">
+          <option value="">Select skin type</option>
+          {% for value in ['I','II','III','IV','V','VI'] %}
+          <option value="{{ value }}" {% if payload.get('skin_type') == value %}selected{% endif %}>Type {{ value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </section>
+
+    <section class="panel inset"><h3>Contraindications</h3><div id="intakeQuestions" class="check-stack"></div></section>
+    <label>General client notes<textarea name="general_notes" rows="4">{{ payload.get('general_notes', '') }}</textarea></label>
+    <label>Internal staff notes<textarea name="staff_notes" rows="4">{{ payload.get('staff_notes', '') }}</textarea></label>
+    <section class="panel inset"><h3>Acknowledgements</h3><div id="serviceAcknowledgements" class="check-stack"></div><hr /><div id="commonAcknowledgements" class="check-stack"></div></section>
+    <label>Client typed full name<input type="text" name="typed_name" value="{{ payload.get('typed_name', '') }}" required /></label>
+    <section class="panel inset"><h3>Digital signature</h3><canvas id="signaturePad" width="960" height="220"></canvas><input type="hidden" name="signature_data" id="signatureData" /><div class="button-row"><button type="button" id="clearSignature" class="secondary">Clear signature</button></div></section>
+    <div class="button-row"><button type="submit">Save treatment record</button><a class="button-link secondary" href="{{ url_for('client_detail', client_id=client.id) }}">Cancel</a></div>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>window.initialPayload = {{ payload|tojson }};</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

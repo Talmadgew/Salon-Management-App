@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel form-panel narrow">
+  <h2>{{ 'Edit product' if edit else 'New product' }}</h2>
+  <form method="post" class="stack-form">
+    <label>SKU<input type="text" name="sku" value="{{ product.sku or '' }}" /></label>
+    <label>Name<input type="text" name="name" value="{{ product.name or '' }}" required /></label>
+    <label>Category<input type="text" name="category" value="{{ product.category or '' }}" /></label>
+    <div class="grid two">
+      <label>Unit price<input type="number" min="0" step="0.01" name="unit_price" value="{{ product.unit_price or '' }}" required /></label>
+      <label>Stock quantity<input type="number" min="0" step="0.01" name="stock_qty" value="{{ product.stock_qty or '' }}" required /></label>
+    </div>
+    <label class="checkbox-line"><input type="checkbox" name="active" {% if product.active or not edit %}checked{% endif %} /> Product active</label>
+    <div class="button-row">
+      <button type="submit">{{ 'Save changes' if edit else 'Create product' }}</button>
+      <a class="button-link secondary" href="{{ url_for('products') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel form-panel narrow">
+  <h2>{{ 'Edit staff' if edit else 'New staff user' }}</h2>
+  <form method="post" class="stack-form">
+    <label>Full name<input type="text" name="full_name" value="{{ staff.full_name or '' }}" required /></label>
+    <label>Username<input type="text" name="username" value="{{ staff.username or '' }}" required /></label>
+    <label>Password<input type="password" name="password" required /></label>
+    <label>Role<select name="role" required><option value="staff" {% if staff.role == 'staff' %}selected{% endif %}>Staff</option><option value="admin" {% if staff.role == 'admin' %}selected{% endif %}>Admin</option></select></label>
+    <div class="button-row"><button type="submit">Create staff user</button><a class="button-link secondary" href="{{ url_for('staff_list') }}">Cancel</a></div>
+  </form>
+</section>
+{% endblock %}

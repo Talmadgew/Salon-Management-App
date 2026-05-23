@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel form-panel">
+  <h2>{{ 'Edit client' if edit else 'New client' }}</h2>
+  <form method="post" class="stack-form">
+    <div class="grid two">
+      <label>First name<input type="text" name="first_name" value="{{ client.first_name or '' }}" required /></label>
+      <label>Last name<input type="text" name="last_name" value="{{ client.last_name or '' }}" required /></label>
+    </div>
+    <div class="grid two">
+      <label>ID number<input type="text" name="id_number" value="{{ client.id_number or '' }}" /></label>
+      <label>Phone<input type="text" name="phone" value="{{ client.phone or '' }}" required /></label>
+    </div>
+    <div class="grid two">
+      <label>Email<input type="email" name="email" value="{{ client.email or '' }}" /></label>
+      <label>Date of birth<input type="date" name="date_of_birth" value="{{ client.date_of_birth or '' }}" /></label>
+    </div>
+    <div class="grid two">
+      <label>Emergency contact<input type="text" name="emergency_contact_name" value="{{ client.emergency_contact_name or '' }}" /></label>
+      <label>Emergency contact phone<input type="text" name="emergency_contact_phone" value="{{ client.emergency_contact_phone or '' }}" /></label>
+    </div>
+    <label>Medical notes / important history<textarea name="medical_notes" rows="4">{{ client.medical_notes or '' }}</textarea></label>
+    <label class="checkbox-line"><input type="checkbox" name="popia_marketing_opt_in" {% if client.popia_marketing_opt_in %}checked{% endif %} /> POPIA marketing opt-in granted</label>
+    <div class="button-row">
+      <button type="submit">{{ 'Save changes' if edit else 'Create client' }}</button>
+      <a class="button-link secondary" href="{{ url_for('clients') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel form-panel">
+  <h2>{{ 'Edit booking' if edit else 'New booking' }}</h2>
+  <form method="post" class="stack-form" id="bookingForm">
+    <div class="grid two">
+      <label>Existing client
+        <select name="client_id" id="bookingClient">
+          <option value="">Walk-in / manual entry</option>
+          {% for client in clients %}
+          <option value="{{ client.id }}" data-phone="{{ client.phone }}" {% if booking.client_id|string == client.id|string %}selected{% endif %}>{{ client.first_name }} {{ client.last_name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Service
+        <select name="service_code" id="bookingService" required>
+          <option value="">Select service</option>
+          {% for code, service in service_definitions.items() %}
+          <option value="{{ code }}" data-duration="{{ service.duration_minutes }}" data-price="{{ service.default_price }}" {% if booking.service_code == code %}selected{% endif %}>{{ service.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <div class="grid two">
+      <label>Walk-in name<input type="text" name="walkin_name" value="{{ booking.walkin_name or '' }}" /></label>
+      <label>Walk-in phone<input type="text" name="walkin_phone" value="{{ booking.walkin_phone or '' }}" /></label>
+    </div>
+    <div class="grid three">
+      <label>Date<input type="date" name="start_date" value="{{ booking.start_date or '' }}" required /></label>
+      <label>Start time<input type="time" name="start_time" value="{{ booking.start_time or '' }}" required /></label>
+      <label>Duration minutes<input type="number" id="bookingDuration" name="duration_minutes" min="15" step="15" value="{{ booking.duration_minutes or '' }}" required /></label>
+    </div>
+    <div class="grid three">
+      <label>Staff
+        <select name="staff_user_id" required>
+          <option value="">Select staff</option>
+          {% for user in staff %}
+          <option value="{{ user.id }}" {% if booking.staff_user_id|string == user.id|string %}selected{% endif %}>{{ user.full_name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Status
+        <select name="status">
+          {% for status in booking_statuses %}
+          <option value="{{ status }}" {% if booking.status == status %}selected{% endif %}>{{ status }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Estimated price<input type="number" id="bookingPrice" name="price_estimate" min="0" step="0.01" value="{{ booking.price_estimate or '' }}" /></label>
+    </div>
+    <label>Notes<textarea name="notes" rows="4">{{ booking.notes or '' }}</textarea></label>
+    <div class="button-row">
+      <button type="submit">{{ 'Save booking' if edit else 'Create booking' }}</button>
+      <a class="button-link secondary" href="{{ url_for('bookings') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='app.js') }}"></script>{% endblock %}

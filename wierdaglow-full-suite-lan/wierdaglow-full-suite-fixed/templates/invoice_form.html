@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel form-panel">
+  <div class="section-header"><h2>New invoice</h2><p class="muted">Build a service and retail sale.</p></div>
+  <form method="post" class="stack-form" id="invoiceForm">
+    <div class="grid three">
+      <label>Client
+        <select name="client_id">
+          <option value="">Walk-in / manual entry</option>
+          {% for client in clients %}
+          <option value="{{ client.id }}" {% if payload.client_id|string == client.id|string %}selected{% endif %}>{{ client.first_name }} {{ client.last_name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Walk-in name<input type="text" name="walkin_name" value="{{ payload.walkin_name or '' }}" /></label>
+      <label>Related booking
+        <select name="appointment_id">
+          <option value="">None</option>
+          {% for booking in appointments %}
+          <option value="{{ booking.id }}" {% if payload.appointment_id|string == booking.id|string %}selected{% endif %}>{{ booking.start_at[:16] }} · {{ booking.client_name }} · {{ booking.service_name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <div class="grid two">
+      <label>Tax rate %<input type="number" min="0" step="0.01" name="tax_rate" value="{{ payload.tax_rate or '15' }}" /></label>
+      <label>Notes<input type="text" name="notes" value="{{ payload.notes or '' }}" /></label>
+    </div>
+
+    <section class="panel inset">
+      <div class="section-header"><h3>Invoice lines</h3><button type="button" id="addInvoiceLine" class="secondary">Add line</button></div>
+      <div id="invoiceLines"></div>
+    </section>
+
+    <div class="button-row">
+      <button type="submit">Create invoice</button>
+      <a class="button-link secondary" href="{{ url_for('invoice_list') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.invoiceProducts = {{ products|tojson }};
+  window.invoiceServices = {{ service_definitions|tojson }};
+  window.invoiceInitialLines = {{ lines|tojson }};
+</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

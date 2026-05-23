@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-header">
+    <div>
+      <h2>{{ client.first_name }} {{ client.last_name }}</h2>
+      <p class="muted">{{ client.phone }}{% if client.email %} · {{ client.email }}{% endif %}</p>
+    </div>
+    <div class="button-row">
+      <a class="button-link" href="{{ url_for('record_new', client_id=client.id) }}">New consent</a>
+      <a class="button-link" href="{{ url_for('booking_new') }}?client_id={{ client.id }}">New booking</a>
+      <a class="button-link secondary" href="{{ url_for('client_edit', client_id=client.id) }}">Edit</a>
+    </div>
+  </div>
+  <div class="grid-3 slim">
+    <div class="stat-box"><span>ID</span><strong>{{ client.id_number or '—' }}</strong></div>
+    <div class="stat-box"><span>DOB</span><strong>{{ client.date_of_birth or '—' }}</strong></div>
+    <div class="stat-box"><span>Marketing</span><strong>{{ 'Yes' if client.popia_marketing_opt_in else 'No' }}</strong></div>
+  </div>
+  <p><strong>Emergency contact:</strong> {{ client.emergency_contact_name or '—' }}{% if client.emergency_contact_phone %} · {{ client.emergency_contact_phone }}{% endif %}</p>
+  <p><strong>Medical notes:</strong> {{ client.medical_notes or 'None captured.' }}</p>
+</section>
+
+<div class="grid-2">
+  <section class="panel">
+    <h3>Recent bookings</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Service</th><th>Staff</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for row in appointments %}
+          <tr><td>{{ row.start_at }}</td><td>{{ row.service_name }}</td><td>{{ row.staff_name or '—' }}</td><td>{{ row.status }}</td></tr>
+          {% else %}
+          <tr><td colspan="4" class="muted">No bookings yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="panel">
+    <h3>Recent invoices</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>No.</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for row in invoices %}
+          <tr><td><a href="{{ url_for('invoice_detail', invoice_id=row.id) }}">{{ row.invoice_number }}</a></td><td>R {{ '%.2f'|format(row.total) }}</td><td>{{ row.payment_status }}</td><td>{{ row.created_at[:10] }}</td></tr>
+          {% else %}
+          <tr><td colspan="4" class="muted">No invoices yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Consent / treatment records</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Service</th><th>Status</th><th>Recorded by</th></tr></thead>
+      <tbody>
+        {% for row in records %}
+        <tr><td>{{ row.service_date }}</td><td><a href="{{ url_for('record_print', record_id=row.id) }}">{{ row.service_name }}</a></td><td>{{ row.assessment_label }}</td><td>{{ row.recorded_by }}</td></tr>
+        {% else %}
+        <tr><td colspan="4" class="muted">No consent records yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

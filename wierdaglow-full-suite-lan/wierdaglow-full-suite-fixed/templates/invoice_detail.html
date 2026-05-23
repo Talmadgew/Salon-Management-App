@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel print-sheet">
+  <div class="section-header no-print">
+    <div>
+      <h2>{{ invoice.invoice_number }}</h2>
+      <p class="muted">Client: {{ invoice.client_name or 'Walk-in' }}</p>
+    </div>
+    <div class="button-row">
+      <button onclick="window.print()">Print</button>
+      <a class="button-link secondary" href="{{ url_for('invoice_list') }}">Back</a>
+    </div>
+  </div>
+  <div class="print-header">
+    <h1>Wierdaglow Beauty Boutique</h1>
+    <p>Tax invoice / POS slip</p>
+  </div>
+  <div class="print-grid">
+    <div>
+      <p><strong>Invoice:</strong> {{ invoice.invoice_number }}</p>
+      <p><strong>Date:</strong> {{ invoice.created_at[:10] }}</p>
+      <p><strong>Client:</strong> {{ invoice.client_name or 'Walk-in' }}</p>
+      {% if client %}<p><strong>Phone:</strong> {{ client.phone }}</p>{% endif %}
+    </div>
+    <div>
+      <p><strong>Staff:</strong> {{ invoice.staff_name }}</p>
+      <p><strong>Status:</strong> {{ invoice.payment_status }}</p>
+      <p><strong>Total:</strong> R {{ '%.2f'|format(invoice.total) }}</p>
+      <p><strong>Balance:</strong> R {{ '%.2f'|format(balance) }}</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Description</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+      <tbody>
+        {% for item in items %}
+        <tr><td>{{ item.description }}</td><td>{{ item.qty }}</td><td>R {{ '%.2f'|format(item.unit_price) }}</td><td>R {{ '%.2f'|format(item.line_total) }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><th colspan="3">Subtotal</th><th>R {{ '%.2f'|format(invoice.subtotal) }}</th></tr>
+        <tr><th colspan="3">VAT</th><th>R {{ '%.2f'|format(invoice.tax) }}</th></tr>
+        <tr><th colspan="3">Total</th><th>R {{ '%.2f'|format(invoice.total) }}</th></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <section class="panel inset no-print">
+    <h3>Capture payment</h3>
+    <form method="post" action="{{ url_for('invoice_pay', invoice_id=invoice.id) }}" class="stack-form compact">
+      <div class="grid three">
+        <label>Amount<input type="number" min="0.01" step="0.01" name="amount" required /></label>
+        <label>Method
+          <select name="method">{% for m in payment_methods %}<option value="{{ m }}">{{ m }}</option>{% endfor %}</select>
+        </label>
+        <label>Reference<input type="text" name="reference" /></label>
+      </div>
+      <button type="submit">Add payment</button>
+    </form>
+  </section>
+
+  <section class="panel inset">
+    <h3>Payments</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Method</th><th>Reference</th><th>Amount</th></tr></thead>
+        <tbody>
+          {% for payment in payments %}
+          <tr><td>{{ payment.paid_at[:16] }}</td><td>{{ payment.method }}</td><td>{{ payment.reference or '—' }}</td><td>R {{ '%.2f'|format(payment.amount) }}</td></tr>
+          {% else %}
+          <tr><td colspan="4" class="muted">No payments captured.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>
+{% endblock %}

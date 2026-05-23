@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-header">
+    <div><h2>Products</h2><p class="muted">Retail and stock control for POS.</p></div>
+    <a class="button-link" href="{{ url_for('product_new') }}">Add product</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for row in products %}
+        <tr><td>{{ row.sku or '—' }}</td><td>{{ row.name }}</td><td>{{ row.category or '—' }}</td><td>R {{ '%.2f'|format(row.unit_price) }}</td><td>{{ row.stock_qty }}</td><td>{{ 'Active' if row.active else 'Disabled' }}</td><td><a class="text-link" href="{{ url_for('product_edit', product_id=row.id) }}">Edit</a></td></tr>
+        {% else %}
+        <tr><td colspan="7" class="muted">No products yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

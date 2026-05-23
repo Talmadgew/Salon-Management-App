@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel print-sheet">
+  <div class="section-header no-print"><h2>Printable treatment record</h2><div class="button-row"><button onclick="window.print()">Print</button><a class="button-link secondary" href="{{ url_for('client_detail', client_id=record.client_id) }}">Back</a></div></div>
+  <div class="print-header"><h1>Wierdaglow Beauty Boutique</h1><p>Treatment consent and liability record</p></div>
+  <div class="print-grid">
+    <div>
+      <h3>Client details</h3>
+      <p><strong>Name:</strong> {{ record.first_name }} {{ record.last_name }}</p>
+      <p><strong>ID:</strong> {{ record.id_number or '—' }}</p>
+      <p><strong>Phone:</strong> {{ record.phone }}</p>
+      <p><strong>Email:</strong> {{ record.email or '—' }}</p>
+      <p><strong>Date of birth:</strong> {{ record.date_of_birth or '—' }}</p>
+    </div>
+    <div>
+      <h3>Service details</h3>
+      <p><strong>Service:</strong> {{ record.service_name }}</p>
+      <p><strong>Date:</strong> {{ record.service_date }}</p>
+      <p><strong>Staff:</strong> {{ record.staff_name }}</p>
+      <p><strong>Status:</strong> {{ record.assessment_label }}</p>
+    </div>
+  </div>
+  <h3>Contraindications disclosed</h3>
+  <ul>{% for label in service.intake %}<li>{{ label }} — <strong>{% if form_data.intake[loop.index0|string] %}Yes{% else %}No{% endif %}</strong></li>{% endfor %}</ul>
+  {% if record.service_code == 'sunbed' %}
+  <h3>Sunbed controls</h3>
+  <p><strong>Minutes requested:</strong> {{ form_data.sunbed.minutes_requested }}</p>
+  <p><strong>Previous session date:</strong> {{ form_data.sunbed.previous_session_date or '—' }}</p>
+  <p><strong>Skin type:</strong> {{ form_data.sunbed.skin_type or '—' }}</p>
+  {% endif %}
+  <h3>Client notes</h3><p>{{ form_data.general_notes or 'No service-specific notes captured.' }}</p>
+  <h3>Staff notes</h3><p>{{ form_data.staff_notes or 'No staff notes captured.' }}</p>
+  <h3>Acknowledgements</h3>
+  <ul>
+    {% for ack in service.acknowledgements %}<li>{{ ack }} — <strong>{% if form_data.acknowledgements['service_' ~ loop.index0] %}Accepted{% else %}Not accepted{% endif %}</strong></li>{% endfor %}
+    {% for ack in common_acks %}<li>{{ ack }} — <strong>{% if form_data.acknowledgements['common_' ~ loop.index0] %}Accepted{% else %}Not accepted{% endif %}</strong></li>{% endfor %}
+  </ul>
+  <h3>Assessment outcome</h3>
+  {% if reasons %}<p><strong>Blocking reasons:</strong></p><ul>{% for reason in reasons %}<li>{{ reason }}</li>{% endfor %}</ul>{% endif %}
+  {% if warnings %}<p><strong>Warnings:</strong></p><ul>{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul>{% endif %}
+  {% if not reasons and not warnings %}<p>No automatic red flags were detected from the captured information.</p>{% endif %}
+  <h3>Signature confirmation</h3>
+  <p><strong>Typed name:</strong> {{ form_data.typed_name }}</p>
+  {% if signature_exists %}<img class="signature-image" src="{{ url_for('uploaded_file', filename=record.signature_path.replace('uploads/', '')) }}" alt="Client signature" />{% else %}<p>Signature image not found.</p>{% endif %}
+</section>
+{% endblock %}

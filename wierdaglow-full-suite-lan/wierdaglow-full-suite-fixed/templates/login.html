@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Login · Wierdaglow Full Suite{% endblock %}
+{% block content %}
+<section class="panel auth-card">
+  <div class="brand-kicker">Wierdaglow Beauty Boutique</div>
+  <h2>Staff login</h2>
+  <p class="muted">Default admin login: admin / Admin@123</p>
+  <form method="post" class="stack-form">
+    <label>Username<input type="text" name="username" required /></label>
+    <label>Password<input type="password" name="password" required /></label>
+    <button type="submit">Sign in</button>
+  </form>
+</section>
+{% endblock %}
